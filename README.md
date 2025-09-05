@@ -124,7 +124,7 @@ nslookup google.com 192.168.10.1
 ---
 ## 5. Final version rc.conf
 `/etc/rc.conf`:
-```conf
+
 [rc.conf](./rc.conf)
 ```
 
