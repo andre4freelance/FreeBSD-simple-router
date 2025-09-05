@@ -174,7 +174,7 @@ pf_rules="/etc/pf.conf"
 # IP fORWADING 
 gateway_enable="YES"
 
-# LOCAL UNBOUD (DNS RESOLVER)
+# LOCAL UNBOUND (DNS RESOLVER)
 local_unbound_enable="YES"
 ```
 
