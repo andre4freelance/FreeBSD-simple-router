@@ -1,5 +1,4 @@
 # FreeBSD SIMPLE ROUTER: DHCP Client, DHCP Server, NAT, DNS Cache
-
 ## Topology
 
 ![Topology](images/topology.png)
@@ -7,37 +6,39 @@
 ---
 
 ## 1. DHCP Client (WAN)
-Edit `/etc/rc.conf`:
+Edit /etc/rc.conf:
 ```conf
-# DHCP CLIENT vtnet0 (WAN)
+# DHCP client on vtnet0 (WAN)
 ifconfig_vtnet0="DHCP"
 ```
 
-Restart networking:
+Restart the network interface:
 ```sh
 service netif restart vtnet0
 ```
 
-Check IP:
+Check the assigned IP address:
 ```sh
 ifconfig vtnet0
 ```
-![Show IP DHCP Client](images/show-ip-dhcp-client.png)
+
+![DHCP Client IP](images/show-ip-dhcp-client.png)
 
 ---
 
 ## 2. DHCP Server (LAN)
-### Install ISC DHCP server
+Install the ISC DHCP server:
 ```sh
 pkg install isc-dhcp44-server
 ```
 
-### Config file `/etc/rc.conf`
+Configure /etc/rc.conf:
 ```conf
-# DHCP SERVER vtnet1 (LAN)
+# DHCP server for vtnet1 (LAN)
 ifconfig_vtnet1="inet 172.31.0.1 netmask 255.255.255.0"
 dhcpd_enable="YES"
 dhcpd_ifaces="vtnet1"
+```
 ```
 
 ### Config DHCP server
@@ -181,3 +182,45 @@ local_unbound_enable="YES"
 ---
 
 ## 5. Testing
+
+### Test internet connection in client
+
+Testing Internet connection in client
+
+![Client test Internet](images/client-internet.png)
+
+---
+
+### Show DHCP Server Leases
+```sh
+cat /var/db/dhcpd/dhcpd.leases | less
+```
+
+![DHCP Server Leaees](images/dhcp-server-leases.png)
+
+---
+
+### Show NAT rules and connection state
+```sh
+pfctl -s nat
+pfctl -ss
+```
+
+![NAT rules and connection state](images/pf-nat.png)
+
+---
+
+## Devices
+
+- **FreeBSD**: VM-Proxmox with 2vCPU & 2GB RAM
+- **MikroTik**: VM-Proxmox with 1vCPU & 1GB RAM
+
+---
+
+## Links
+
+Origin : 
+[https://github.com/andre4freelance/microcloud/tree/main/single-node](https://github.com/andre4freelance/microcloud/tree/main/single-node)
+
+Linkedin post : 
+[https://www.linkedin.com/posts/link-andre-bastian_infra-cloud-virtualmachine-activity-7366455292886196224-m2Qy?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD73JlUBty-p-mBfMEW0-O4j0sv-e_PRQvc](https://www.linkedin.com/posts/link-andre-bastian_infra-cloud-virtualmachine-activity-7366455292886196224-m2Qy?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD73JlUBty-p-mBfMEW0-O4j0sv-e_PRQvc)
