@@ -3,6 +3,7 @@
 ## 1. DHCP Client (WAN)
 Edit `/etc/rc.conf`:
 ```conf
+# DHCP CLIENT vtnet0 (WAN)
 ifconfig_vtnet0="DHCP"
 ```
 
@@ -11,10 +12,11 @@ Restart networking:
 service netif restart vtnet0
 ```
 
-Cek IP:
+Check IP:
 ```sh
 ifconfig vtnet0
 ```
+![Show IP DHCP Client](images/show-ip-dhcp-client.png)
 
 ---
 
@@ -24,24 +26,25 @@ ifconfig vtnet0
 pkg install isc-dhcp44-server
 ```
 
-### Konfigurasi interface di `/etc/rc.conf`
+### Config file `/etc/rc.conf`
 ```conf
-ifconfig_vtnet1="inet 192.168.10.1/24"
+# DHCP SERVER vtnet1 (LAN)
+ifconfig_vtnet1="inet 172.31.0.1 netmask 255.255.255.0"
 dhcpd_enable="YES"
 dhcpd_ifaces="vtnet1"
 ```
 
-### Konfigurasi DHCP server
+### Config DHCP server
 File: `/usr/local/etc/dhcpd.conf`
 ```conf
 default-lease-time 600;
 max-lease-time 7200;
 authoritative;
 
-subnet 192.168.10.0 netmask 255.255.255.0 {
-    range 192.168.10.100 192.168.10.200;
-    option routers 192.168.10.1;
-    option domain-name-servers 192.168.10.1;
+subnet 172.31.0.0 netmask 255.255.255.0 {
+  range 172.31.0.2 172.31.0.254;
+  option routers 172.31.0.1;
+  option domain-name-servers 172.31.0.1;
 }
 ```
 
@@ -124,8 +127,35 @@ nslookup google.com 192.168.10.1
 ---
 ## 5. Final version rc.conf
 `/etc/rc.conf`:
+```conf
+hostname="FreeBSD"
+sshd_enable="YES"
+moused_nondefault_enable="NO"
+# Set dumpdev to "AUTO" to enable crash dumps, "NO" to disable
+dumpdev="AUTO"
+zfs_enable="YES"
 
-[rc.conf](./rc.conf)
+# DHCP CLIENT vtnet0 (WAN)
+ifconfig_vtnet0="DHCP"
+
+# DHCP SERVER vtnet1 (LAN)
+ifconfig_vtnet1="inet 172.31.0.1 netmask 255.255.255.0"
+dhcpd_enable="YES"
+dhcpd_ifaces="vtnet1"
+
+# IP FILTER
+sysrc pf_enable="YES"
+sysrc pf_rules="/etc/pf.conf"
+
+# PACKET FILTER
+pf_enable="YES"
+pf_rules="/etc/pf.conf"
+
+# IP fORWADING 
+gateway_enable="YES"
+
+# LOCAL UNBOUD (DNS RESOLVER)
+local_unbound_enable="YES"
 ```
 
 ✅ Dengan konfigurasi ini:
